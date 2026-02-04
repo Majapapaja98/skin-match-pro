@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinMatch Pro - Wyszukiwarka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen p-5 font-sans">
+
+    <div class="max-w-md mx-auto bg-white rounded-[2rem] shadow-2xl p-8 border border-white/50 backdrop-blur-sm">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-black text-indigo-600 tracking-tight">SkinMatch Pro</h1>
+            <span class="bg-indigo-100 text-indigo-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase">Beta v1.0</span>
+        </div>
+
+        <p class="text-xs text-gray-400 mb-6 leading-relaxed">Wyszukaj dwa produkty ze swojej półki, aby sprawdzić, czy ich składniki aktywne nie wywołają podrażnień.</p>
+
+        <div class="relative mb-4" id="container1">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1">Produkt Pierwszy</label>
+            <input type="text" id="search1" oninput="filterProducts(1)" placeholder="Wpisz markę lub nazwę..." 
+                class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-300 outline-none transition-all text-sm">
+            <div id="results1" class="hidden absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-48 overflow-y-auto custom-scroll"></div>
+            <div id="selected1" class="hidden mt-2 p-3 bg-indigo-50 rounded-xl text-xs font-medium text-indigo-700 flex justify-between items-center">
+                <span></span>
+                <button onclick="clearSelection(1)" class="text-indigo-400 hover:text-red-500">✕</button>
+            </div>
+        </div>
+
+        <div class="flex justify-center my-2 text-indigo-200 font-bold">VS</div>
+
+        <div class="relative mb-8" id="container2">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1">Produkt Drugi</label>
+            <input type="text" id="search2" oninput="filterProducts(2)" placeholder="Wpisz markę lub nazwę..." 
+                class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-300 outline-none transition-all text-sm">
+            <div id="results2" class="hidden absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-48 overflow-y-auto custom-scroll"></div>
+            <div id="selected2" class="hidden mt-2 p-3 bg-indigo-50 rounded-xl text-xs font-medium text-indigo-700 flex justify-between items-center">
+                <span></span>
+                <button onclick="clearSelection(2)" class="text-indigo-400 hover:text-red-500">✕</button>
+            </div>
+        </div>
+
+        <div id="result-box" class="hidden p-6 rounded-[1.5rem] transition-all duration-500">
+            <div id="result-icon" class="text-4xl mb-3"></div>
+            <div id="result-title" class="font-bold text-lg mb-1"></div>
+            <div id="result-text" class="text-xs leading-relaxed opacity-90"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mini baza danych produktów
+        const productDB = [
+            { brand: "The Ordinary", name: "Niacinamide 10% + Zinc 1%", active: "niacinamide" },
+            { brand: "The Ordinary", name: "Retinol 0.5% in Squalane", active: "retinol" },
+            { brand: "The Ordinary", name: "Glycolic Acid 7% Toning", active: "acids" },
+            { brand: "The Ordinary", name: "Vitamin C Suspension 23%", active: "vit_c" },
+            { brand: "The Ordinary", name: "Hyaluronic Acid 2% + B5", active: "hyaluronic" },
+            { brand: "CeraVe", name: "Resurfacing Retinol Serum", active: "retinol" },
+            { brand: "CeraVe", name: "SA Smoothing Cleanser", active: "acids" },
+            { brand: "La Roche-Posay", name: "Effaclar Duo(+)", active: "acids" },
+            { brand: "La Roche-Posay", name: "Pure Vitamin C10", active: "vit_c" },
+            { brand: "Paulas Choice", name: "Skin Perfecting 2% BHA", active: "acids" },
+            { brand: "BasicLab", name: "Serum z Estrową Formą Wit. C", active: "vit_c" },
+            { brand: "Miya", name: "Serum z Witaminą C", active: "vit_c" }
+        ];
+
+        const conflicts = {
+            'retinol_acids': { type: 'error', msg: 'Błąd: Oba produkty silnie złuszczają. Ryzyko uszkodzenia bariery ochronnej!' },
+            'retinol_vit_c': { type: 'warning', msg: 'Ostrożnie: Witaminę C stosuj rano, a Retinol wieczorem. Razem mogą wywołać pieczenie.' },
+            'vit_c_niacinamide': { type: 'warning', msg: 'Wskazówka: Mogą się neutralizować. Zachowaj 15 min odstępu.' },
+            'acids_vit_c': { type: 'error', msg: 'Błąd: Zbyt niskie pH! To połączenie może "poparzyć" wrażliwą cerę.' }
+        };
+
+        let selected = [null, null];
+
+        function filterProducts(num) {
+            const val = document.getElementById('search' + num).value.toLowerCase();
+            const resDiv = document.getElementById('results' + num);
+            
+            if (val.length < 2) { resDiv.classList.add('hidden'); return; }
+
+            const filtered = productDB.filter(p => 
+                p.brand.toLowerCase().includes(val) || p.name.toLowerCase().includes(val)
+            );
+
+            resDiv.innerHTML = '';
+            filtered.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'p-3 hover:bg-indigo-50 cursor-pointer text-xs border-b last:border-0';
+                item.innerHTML = `<strong>${p.brand}</strong> - ${p.name}`;
+                item.onclick = () => selectProduct(num, p);
+                resDiv.appendChild(item);
+            });
+            resDiv.classList.remove('hidden');
+        }
+
+        function selectProduct(num, product) {
+            selected[num-1] = product;
+            document.getElementById('search' + num).classList.add('hidden');
+            document.getElementById('results' + num).classList.add('hidden');
+            const selDiv = document.getElementById('selected' + num);
+            selDiv.querySelector('span').innerText = product.brand + " - " + product.name;
+            selDiv.classList.remove('hidden');
+            checkMatch();
+        }
+
+        function clearSelection(num) {
+            selected[num-1] = null;
+            document.getElementById('search' + num).classList.remove('hidden');
+            document.getElementById('search' + num).value = '';
+            document.getElementById('selected' + num).classList.add('hidden');
+            document.getElementById('result-box').classList.add('hidden');
+        }
+
+        function checkMatch() {
+            if (!selected[0] || !selected[1]) return;
+
+            const a = selected[0].active;
+            const b = selected[1].active;
+            const resBox = document.getElementById('result-box');
+            
+            resBox.className = 'p-6 rounded-[1.5rem] mt-6 block animate-bounce-short';
+            
+            const combo1 = a + '_' + b;
+            const combo2 = b + '_' + a;
+            const conflict = conflicts[combo1] || conflicts[combo2];
+
+            if (conflict) {
+                showRes(conflict.type, conflict.type === 'error' ? 'ZŁE POŁĄCZENIE' : 'UWAŻAJ', conflict.msg);
+            } else {
+                showRes('success', 'MOŻESZ ŁĄCZYĆ', 'Te produkty są dla siebie bezpieczne. Pamiętaj o nawilżaniu!');
+            }
+        }
+
+        function showRes(type, title, text) {
+            const box = document.getElementById('result-box');
+            document.getElementById('result-title').innerText = title;
+            document.getElementById('result-text').innerText = text;
+            const icon = document.getElementById('result-icon');
+
+            if (type === 'error') {
+                box.classList.add('bg-red-500', 'text-white');
+                icon.innerText = '🛑';
+            } else if (type === 'warning') {
+                box.classList.add('bg-amber-400', 'text-amber-900');
+                icon.innerText = '⚠️';
+            } else {
+                box.classList.add('bg-emerald-500', 'text-white');
+                icon.innerText = '✨';
+            }
+        }
+    </script>
+</body>
+</html>
