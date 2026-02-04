@@ -5,217 +5,416 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkinMatch ✨ Global Glow Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
-                fontFamily: { sans: ['Quicksand', 'sans-serif'] },
-                extend: { boxShadow: { 'glow-pink': '0 0 30px -5px rgba(244, 114, 182, 0.4)' } }
+                fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                extend: { 
+                    boxShadow: { 'glow': '0 0 40px -10px rgba(236, 72, 153, 0.3)' },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
+                }
             }
         }
     </script>
     <style>
-        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 10px; }
-        .tab-active { border-bottom: 3px solid #f472b6; color: #f472b6; font-weight: bold; }
-        @keyframes pulse-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-        .animate-pulse-soft { animation: pulse-soft 3s infinite; }
+        body { background: radial-gradient(circle at 50% 10%, #fff1f2, #eff6ff, #fdf4ff); }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .nav-btn.active { background-color: #fce7f3; color: #db2777; transform: scale(1.05); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #f9a8d4; border-radius: 10px; }
+        
+        /* Product Badges */
+        .badge-safe { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .badge-warn { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        .badge-danger { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
     </style>
 </head>
-<body class="bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rose-100 via-indigo-50 to-orange-50 min-h-screen font-sans p-4 flex flex-col items-center">
+<body class="min-h-screen font-sans text-slate-800 p-4 flex flex-col items-center justify-center">
 
-    <div class="w-full max-w-md glass rounded-[3rem] shadow-glow-pink p-8 border border-white relative overflow-hidden">
+    <main class="w-full max-w-md glass rounded-[2.5rem] shadow-glow p-6 relative overflow-hidden min-h-[700px]">
         
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-black text-pink-500 tracking-tighter">SkinMatch <span class="text-indigo-300">Pro</span></h1>
-            <div class="flex gap-2">
-                <button onclick="showSection('quiz')" class="p-2 hover:bg-pink-100 rounded-full transition">🧬</button>
-                <button onclick="showSection('shelf')" class="p-2 hover:bg-pink-100 rounded-full transition">🧴</button>
+        <header class="flex justify-between items-center mb-8 px-2">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">SkinMatch<span class="text-pink-500">.</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Intelligent Routine</p>
             </div>
+            <nav class="flex gap-2 bg-white/60 p-1.5 rounded-full backdrop-blur-sm shadow-sm">
+                <button onclick="navTo('matcher')" id="nav-matcher" class="nav-btn active p-2.5 rounded-full transition-all duration-300 hover:bg-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>
+                </button>
+                <button onclick="navTo('shelf')" id="nav-shelf" class="nav-btn p-2.5 rounded-full transition-all duration-300 hover:bg-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+                </button>
+            </nav>
+        </header>
+
+        <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-2 px-4 rounded-full shadow-xl transition-all duration-300 opacity-0 z-50 pointer-events-none">
+            Notification
         </div>
 
-        <div id="section-matcher" class="space-y-6">
-            <div class="text-center bg-white/50 py-3 rounded-2xl mb-6">
-                <p id="skin-badge" class="text-[10px] font-bold text-pink-400 uppercase tracking-widest">Global Glow Community</p>
+        <section id="sec-matcher" class="space-y-5 animate-fade-in">
+            
+            <div class="bg-slate-100/80 p-1 rounded-2xl flex relative">
+                <div id="toggle-bg" class="absolute left-1 top-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-white rounded-xl shadow-sm transition-all duration-300"></div>
+                <button onclick="setTime('AM')" class="flex-1 relative z-10 py-2.5 text-xs font-bold text-center transition-colors duration-300" id="btn-AM">☀️ MORNING</button>
+                <button onclick="setTime('PM')" class="flex-1 relative z-10 py-2.5 text-xs font-bold text-center text-slate-400 transition-colors duration-300" id="btn-PM">🌙 EVENING</button>
             </div>
 
-            <div class="relative">
-                <label class="text-[10px] font-bold text-gray-400 uppercase ml-4 mb-1 block">Step 1: Focus Treatment</label>
-                <input type="text" id="search1" oninput="filterProducts(1)" placeholder="Search Brand or Product..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none border-2 border-transparent focus:border-pink-300 transition-all text-sm">
-                <div id="results1" class="hidden absolute z-30 w-full mt-1 bg-white border rounded-2xl shadow-xl max-h-40 overflow-y-auto custom-scroll"></div>
-                <div id="selected1" class="hidden p-4 bg-pink-50 rounded-3xl text-sm font-bold text-pink-600 flex justify-between items-center animate-pulse-soft"><span></span> <button onclick="clearSelection(1)">✕</button></div>
-            </div>
-
-            <div class="flex justify-center text-pink-200">✦</div>
-
-            <div class="relative">
-                <label class="text-[10px] font-bold text-gray-400 uppercase ml-4 mb-1 block">Step 2: Layer or Seal</label>
-                <input type="text" id="search2" oninput="filterProducts(2)" placeholder="Search Brand or Product..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none border-2 border-transparent focus:border-indigo-300 transition-all text-sm">
-                <div id="results2" class="hidden absolute z-30 w-full mt-1 bg-white border rounded-2xl shadow-xl max-h-40 overflow-y-auto custom-scroll"></div>
-                <div id="selected2" class="hidden p-4 bg-indigo-50 rounded-3xl text-sm font-bold text-indigo-600 flex justify-between items-center animate-pulse-soft"><span></span> <button onclick="clearSelection(2)">✕</button></div>
-            </div>
-
-            <div class="flex bg-gray-100 rounded-2xl p-1">
-                <button onclick="setTime('AM')" id="btn-AM" class="flex-1 py-2 text-[10px] font-bold rounded-xl transition bg-white text-pink-500 shadow-sm">☀️ MORNING</button>
-                <button onclick="setTime('PM')" id="btn-PM" class="flex-1 py-2 text-[10px] font-bold rounded-xl transition text-gray-400">🌙 EVENING</button>
-            </div>
-
-            <div id="result-box" class="hidden p-6 rounded-[2.5rem] text-center border-2 animate-slide-up">
-                <div id="result-icon" class="text-5xl mb-3"></div>
-                <div id="result-title" class="font-bold text-lg mb-1"></div>
-                <p id="result-text" class="text-[11px] leading-relaxed mb-4"></p>
-                <div id="ingredient-tip" class="text-[9px] bg-white/50 p-3 rounded-xl italic text-gray-500"></div>
-            </div>
-        </div>
-
-        <div id="section-shelf" class="hidden space-y-4">
-            <h3 class="text-center font-bold text-pink-500">My Secret Shelf 🤫</h3>
-            <div class="bg-pink-50 p-5 rounded-3xl border-2 border-dashed border-pink-200">
-                <input type="text" id="new-brand" placeholder="Brand..." class="w-full p-3 mb-2 rounded-xl text-xs outline-pink-200 border-none">
-                <input type="text" id="new-name" placeholder="Product Name..." class="w-full p-3 mb-2 rounded-xl text-xs outline-pink-200 border-none">
-                <div class="flex gap-2 mb-4">
-                    <select id="new-active" class="flex-1 p-3 rounded-xl text-[10px] font-bold outline-pink-200 border-none">
-                        <option value="retinol">Active: Retinol</option>
-                        <option value="vit_c">Active: Vitamin C</option>
-                        <option value="acids">Active: Acids (Exfoliant)</option>
-                        <option value="niacinamide">Active: Niacinamide</option>
-                        <option value="peptides">Active: Peptides</option>
-                        <option value="hyaluronic">Active: Hydrator/Base</option>
-                    </select>
-                    <input type="number" id="new-pao" placeholder="PAO (Months)" class="w-20 p-3 rounded-xl text-xs outline-pink-200 border-none">
+            <div class="space-y-4">
+                <div class="relative group">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-300 to-indigo-300 rounded-[1.3rem] opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
+                    <div class="relative bg-white rounded-2xl p-1">
+                        <input type="text" id="search1" oninput="handleInput(1)" placeholder="Step 1: Treatment (e.g. Retinol)" class="w-full p-3.5 text-sm bg-transparent outline-none font-medium placeholder-slate-400">
+                    </div>
+                    <div id="results1" class="hidden absolute z-30 w-full mt-2 bg-white/95 backdrop-blur-xl border border-white rounded-2xl shadow-xl max-h-48 overflow-y-auto custom-scroll p-1"></div>
+                    <div id="sel1" class="hidden relative bg-white border border-pink-100 rounded-2xl p-3 flex justify-between items-center shadow-sm mt-1 animate-slide-up">
+                        <div>
+                            <p class="text-[10px] font-bold text-pink-500 uppercase tracking-wider" id="sel1-brand"></p>
+                            <p class="text-sm font-bold text-slate-700" id="sel1-name"></p>
+                        </div>
+                        <button onclick="clearSel(1)" class="text-slate-300 hover:text-red-400 transition">✕</button>
+                    </div>
                 </div>
-                <button onclick="saveToShelf()" class="w-full bg-pink-400 text-white py-3 rounded-2xl font-bold text-[10px] uppercase shadow-md">Add to Collection</button>
-            </div>
-            <div id="shelf-list" class="space-y-2 max-h-48 overflow-y-auto custom-scroll">
+
+                <div class="flex justify-center"><div class="w-px h-6 bg-slate-200"></div></div>
+
+                <div class="relative group">
+                     <div class="relative bg-white rounded-2xl p-1 border border-slate-100 shadow-sm focus-within:border-indigo-200 focus-within:ring-2 focus-within:ring-indigo-50 transition">
+                        <input type="text" id="search2" oninput="handleInput(2)" placeholder="Step 2: Layer (e.g. Cream)" class="w-full p-3.5 text-sm bg-transparent outline-none font-medium placeholder-slate-400">
+                    </div>
+                    <div id="results2" class="hidden absolute z-30 w-full mt-2 bg-white/95 backdrop-blur-xl border border-white rounded-2xl shadow-xl max-h-48 overflow-y-auto custom-scroll p-1"></div>
+                    <div id="sel2" class="hidden relative bg-white border border-indigo-100 rounded-2xl p-3 flex justify-between items-center shadow-sm mt-1 animate-slide-up">
+                        <div>
+                            <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider" id="sel2-brand"></p>
+                            <p class="text-sm font-bold text-slate-700" id="sel2-name"></p>
+                        </div>
+                        <button onclick="clearSel(2)" class="text-slate-300 hover:text-red-400 transition">✕</button>
+                    </div>
                 </div>
-        </div>
-    </div>
+            </div>
+
+            <div id="result-box" class="hidden flex flex-col items-center justify-center p-6 rounded-[2rem] border-2 transition-all duration-500 animate-slide-up">
+                <div id="res-icon" class="text-4xl mb-3"></div>
+                <h3 id="res-title" class="text-lg font-bold mb-1"></h3>
+                <p id="res-desc" class="text-xs text-center leading-relaxed opacity-90"></p>
+            </div>
+        </section>
+
+        <section id="sec-shelf" class="hidden space-y-4 animate-fade-in">
+            <div class="bg-white/60 p-5 rounded-[2rem] border border-white shadow-sm">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Add to Inventory</h3>
+                <div class="space-y-2">
+                    <input id="shelf-brand" placeholder="Brand Name" class="w-full p-3 rounded-xl bg-white text-xs border border-slate-100 outline-none focus:border-pink-300">
+                    <input id="shelf-name" placeholder="Product Name" class="w-full p-3 rounded-xl bg-white text-xs border border-slate-100 outline-none focus:border-pink-300">
+                    <div class="flex gap-2">
+                        <select id="shelf-active" class="flex-1 p-3 rounded-xl bg-white text-xs border border-slate-100 outline-none text-slate-600">
+                            <option value="hyaluronic">💧 Hydrating</option>
+                            <option value="retinol">✨ Retinol</option>
+                            <option value="vit_c">🍊 Vitamin C</option>
+                            <option value="acids">🧪 Acids (AHA/BHA)</option>
+                            <option value="niacinamide">🛡️ Niacinamide</option>
+                            <option value="peptides">🧬 Peptides</option>
+                        </select>
+                        <input id="shelf-pao" type="number" placeholder="PAO (M)" class="w-20 p-3 rounded-xl bg-white text-xs border border-slate-100 outline-none text-center">
+                    </div>
+                    <button onclick="addToShelf()" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold hover:bg-slate-900 transition shadow-lg shadow-slate-200">SAVE PRODUCT</button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end px-2">
+                <h3 class="text-sm font-bold text-slate-700">My Collection</h3>
+                <span id="shelf-count" class="text-[10px] bg-pink-100 text-pink-600 px-2 py-0.5 rounded-md font-bold">0 items</span>
+            </div>
+            
+            <div id="shelf-grid" class="space-y-3 pb-4 max-h-[300px] overflow-y-auto custom-scroll pr-1">
+                <div class="text-center py-10 opacity-40">
+                    <p class="text-4xl mb-2">🧴</p>
+                    <p class="text-xs">Your shelf is empty.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
 
     <script>
-        // --- GLOBAL SETTINGS & DATA ---
-        let currentDayTime = 'AM';
-        const productDB = [
-            { brand: "The Ordinary", name: "Retinol 1% in Squalane", active: "retinol", am_safe: false },
-            { brand: "The Ordinary", name: "Ascorbyl Glucoside Sol. 12%", active: "vit_c", am_safe: true },
-            { brand: "CeraVe", name: "Hydrating Facial Cleanser", active: "hyaluronic", am_safe: true },
-            { brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", active: "acids", am_safe: false },
-            { brand: "Skinceuticals", name: "C E Ferulic", active: "vit_c", am_safe: true },
-            { brand: "La Roche-Posay", name: "Effaclar Serum", active: "acids", am_safe: false }
+        // --- 1. STATE MANAGEMENT ---
+        const state = {
+            view: 'matcher', // 'matcher' | 'shelf'
+            time: 'AM',
+            selected: [null, null],
+            shelf: JSON.parse(localStorage.getItem('skinShelf_v2')) || []
+        };
+
+        // Static Database (Expanded)
+        const db = [
+            { brand: "The Ordinary", name: "Retinol 1% in Squalane", active: "retinol", am: false },
+            { brand: "The Ordinary", name: "Niacinamide 10%", active: "niacinamide", am: true },
+            { brand: "CeraVe", name: "Resurfacing Retinol", active: "retinol", am: false },
+            { brand: "Paula's Choice", name: "2% BHA Liquid", active: "acids", am: false },
+            { brand: "La Roche-Posay", name: "Vitamin C10", active: "vit_c", am: true },
+            { brand: "Cosrx", name: "Snail Mucin Essence", active: "hyaluronic", am: true },
+            { brand: "Glow Recipe", name: "Dew Drops", active: "niacinamide", am: true },
+            { brand: "Drunk Elephant", name: "T.L.C. Framboos", active: "acids", am: false }
         ];
 
-        const glossary = {
-            retinol: "Anti-aging powerhouse. Stimulates collagen but makes skin sun-sensitive.",
-            vit_c: "Antioxidant that brightens skin and protects against pollution.",
-            acids: "Exfoliates dead cells. Great for glow, but don't overdo it!",
-            niacinamide: "Oil control and pore minimizer. Generally very safe.",
-            peptides: "The 'building blocks' of skin. Great for firmness.",
-            hyaluronic: "Magnet for moisture. Holds 1000x its weight in water."
+        const logic = {
+            'retinol_acids': { level: 3, title: "Barrier Risk", msg: "Too harsh! Retinol and Acids together can damage your skin barrier.", icon: "🛑" },
+            'retinol_vit_c': { level: 2, title: "Schedule Conflict", msg: "Use Vitamin C in AM (Glow) and Retinol in PM (Repair).", icon: "🌗" },
+            'acids_vit_c': { level: 2, title: "Irritation Risk", msg: "Low pH overload. Best to use at different times.", icon: "⚠️" },
+            'peptides_acids': { level: 3, title: "Ineffective", msg: "Acids can break down peptides, rendering them useless.", icon: "📉" },
+            'peptides_vit_c': { level: 2, title: "Destabilization", msg: "Pure Vitamin C can destabilize Copper Peptides.", icon: "🧪" }
         };
 
-        const conflicts = {
-            'retinol_acids': { type: 'error', icon: '🩹', title: 'Skin Barrier Alert!', msg: 'Both ingredients are heavy exfoliants. Using them together might cause peeling or burns.' },
-            'retinol_vit_c': { type: 'warning', icon: '🌙', title: 'Schedule Tweak', msg: 'Best split: Vitamin C for AM protection, Retinol for PM repair.' },
-            'peptides_vit_c': { type: 'warning', icon: '🧪', title: 'Science Conflict', msg: 'Pure Vit C can destabilize Copper Peptides. Use them at different times.' }
-        };
-
-        let userShelf = JSON.parse(localStorage.getItem('globalShelf')) || [];
-        let selected = [null, null];
-
-        // --- CORE FUNCTIONS ---
-        function setTime(time) {
-            currentDayTime = time;
-            document.getElementById('btn-AM').className = time === 'AM' ? 'flex-1 py-2 text-[10px] font-bold rounded-xl bg-white text-pink-500 shadow-sm' : 'flex-1 py-2 text-[10px] font-bold rounded-xl text-gray-400';
-            document.getElementById('btn-PM').className = time === 'PM' ? 'flex-1 py-2 text-[10px] font-bold rounded-xl bg-white text-indigo-500 shadow-sm' : 'flex-1 py-2 text-[10px] font-bold rounded-xl text-gray-400';
-            checkCompatibility();
+        // --- 2. DOM MANIPULATION ---
+        function init() {
+            renderShelf();
+            setTime('AM'); // Set initial visual state
         }
 
-        function filterProducts(num) {
-            const val = document.getElementById('search' + num).value.toLowerCase();
-            const resDiv = document.getElementById('results' + num);
-            if (val.length < 2) { resDiv.classList.add('hidden'); return; }
+        function navTo(page) {
+            state.view = page;
+            
+            // Toggle Content
+            document.getElementById('sec-matcher').classList.toggle('hidden', page !== 'matcher');
+            document.getElementById('sec-shelf').classList.toggle('hidden', page !== 'shelf');
+            
+            // Toggle Buttons
+            document.getElementById('nav-matcher').classList.toggle('active', page === 'matcher');
+            document.getElementById('nav-shelf').classList.toggle('active', page === 'shelf');
+            
+            // Reset styles
+            document.getElementById('nav-matcher').classList.toggle('text-slate-400', page !== 'matcher');
+            document.getElementById('nav-shelf').classList.toggle('text-slate-400', page !== 'shelf');
+        }
 
-            const fullDB = [...productDB, ...userShelf];
-            const filtered = fullDB.filter(p => p.brand.toLowerCase().includes(val) || p.name.toLowerCase().includes(val));
+        function setTime(val) {
+            state.time = val;
+            const bg = document.getElementById('toggle-bg');
+            const btnAM = document.getElementById('btn-AM');
+            const btnPM = document.getElementById('btn-PM');
+
+            if(val === 'AM') {
+                bg.style.transform = 'translateX(0)';
+                btnAM.className = 'flex-1 relative z-10 py-2.5 text-xs font-bold text-center text-slate-800 transition-colors duration-300';
+                btnPM.className = 'flex-1 relative z-10 py-2.5 text-xs font-bold text-center text-slate-400 transition-colors duration-300';
+            } else {
+                bg.style.transform = 'translateX(100%)';
+                btnAM.className = 'flex-1 relative z-10 py-2.5 text-xs font-bold text-center text-slate-400 transition-colors duration-300';
+                btnPM.className = 'flex-1 relative z-10 py-2.5 text-xs font-bold text-center text-slate-800 transition-colors duration-300';
+            }
+            analyze(); // Re-run analysis on time change
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => t.classList.add('opacity-0', 'translate-y-4'), 2500);
+        }
+
+        // --- 3. MATCHER LOGIC ---
+        function handleInput(slot) {
+            const val = document.getElementById(`search${slot}`).value.toLowerCase();
+            const resDiv = document.getElementById(`results${slot}`);
+            
+            if(val.length < 2) { resDiv.classList.add('hidden'); return; }
+
+            // Search in DB + User Shelf
+            const allItems = [...db, ...state.shelf];
+            const matches = allItems.filter(p => p.brand.toLowerCase().includes(val) || p.name.toLowerCase().includes(val));
 
             resDiv.innerHTML = '';
-            filtered.forEach(p => {
-                const item = document.createElement('div');
-                item.className = 'p-4 hover:bg-pink-50 cursor-pointer text-[11px] border-b border-gray-50 flex justify-between items-center';
-                item.innerHTML = `<div><b class="text-pink-400 uppercase text-[9px]">${p.brand}</b><br>${p.name}</div>`;
-                item.onclick = () => selectProduct(num, p);
-                resDiv.appendChild(item);
+            matches.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'p-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 flex items-center justify-between group';
+                el.innerHTML = `
+                    <div>
+                        <div class="text-[9px] font-bold text-slate-400 uppercase group-hover:text-pink-400 transition">${p.brand}</div>
+                        <div class="text-xs font-bold text-slate-700">${p.name}</div>
+                    </div>
+                    ${p.active === 'retinol' || p.active === 'acids' ? '<span class="text-[10px]">🌙</span>' : ''}
+                `;
+                el.onclick = () => selectItem(slot, p);
+                resDiv.appendChild(el);
             });
             resDiv.classList.remove('hidden');
         }
 
-        function selectProduct(num, product) {
-            selected[num-1] = product;
-            document.getElementById('search' + num).classList.add('hidden');
-            document.getElementById('results' + num).classList.add('hidden');
-            const selDiv = document.getElementById('selected' + num);
-            selDiv.querySelector('span').innerText = product.brand + " - " + product.name;
-            selDiv.classList.remove('hidden');
-            checkCompatibility();
+        function selectItem(slot, product) {
+            state.selected[slot-1] = product;
+            
+            // Hide Search, Show Selected
+            document.getElementById(`search${slot}`).parentNode.classList.add('hidden');
+            document.getElementById(`results${slot}`).classList.add('hidden');
+            
+            const selEl = document.getElementById(`sel${slot}`);
+            document.getElementById(`sel${slot}-brand`).innerText = product.brand;
+            document.getElementById(`sel${slot}-name`).innerText = product.name;
+            selEl.classList.remove('hidden');
+
+            analyze();
         }
 
-        function checkCompatibility() {
-            if (!selected[0] || !selected[1]) return;
-            const resBox = document.getElementById('result-box');
-            resBox.classList.remove('hidden');
-
-            const a = selected[0], b = selected[1];
-            const combo = a.active + '_' + b.active;
-            const comboRev = b.active + '_' + a.active;
-            const conflict = conflicts[combo] || conflicts[comboRev];
-
-            // AM/PM Logic Check
-            const amDanger = currentDayTime === 'AM' && (!a.am_safe || !b.am_safe);
-
-            if (amDanger) {
-                updateUI('☀️', 'PM Preferred', 'One of your products contains Retinol or Acids. These are best for evening use to avoid sun damage.', 'bg-orange-50 border-orange-200 text-orange-800');
-            } else if (conflict) {
-                updateUI(conflict.icon, conflict.title, conflict.msg, conflict.type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800');
-            } else {
-                updateUI('✨', 'Safe Routine!', 'These ingredients play well together. Don\'t forget your SPF during the day!', 'bg-emerald-50 border-emerald-200 text-emerald-800');
-            }
-
-            document.getElementById('ingredient-tip').innerText = `Pro Tip: ${glossary[a.active]}`;
-        }
-
-        function updateUI(icon, title, text, style) {
-            const box = document.getElementById('result-box');
-            box.className = `p-6 rounded-[2.5rem] text-center border-2 mt-8 animate-slide-up ${style}`;
-            document.getElementById('result-icon').innerText = icon;
-            document.getElementById('result-title').innerText = title;
-            document.getElementById('result-text').innerText = text;
-        }
-
-        function saveToShelf() {
-            const b = document.getElementById('new-brand').value;
-            const n = document.getElementById('new-name').value;
-            const a = document.getElementById('new-active').value;
-            const p = document.getElementById('new-pao').value;
-            if(!b || !n) return;
-
-            const newItem = { brand: b, name: n, active: a, pao: p, opened: new Date().toISOString(), am_safe: a !== 'retinol' && a !== 'acids' };
-            userShelf.push(newItem);
-            localStorage.setItem('globalShelf', JSON.stringify(userShelf));
-            showSection('matcher');
-            alert('Saved to your collection! 🌸');
-        }
-
-        function showSection(name) {
-            document.getElementById('section-matcher').className = name === 'matcher' ? 'space-y-6' : 'hidden';
-            document.getElementById('section-shelf').className = name === 'shelf' ? 'space-y-4' : 'hidden';
-        }
-
-        function clearSelection(n) {
-            selected[n-1] = null;
-            document.getElementById('search' + n).classList.remove('hidden');
-            document.getElementById('selected' + n).classList.add('hidden');
+        function clearSel(slot) {
+            state.selected[slot-1] = null;
+            document.getElementById(`sel${slot}`).classList.add('hidden');
+            document.getElementById(`search${slot}`).value = '';
+            document.getElementById(`search${slot}`).parentNode.classList.remove('hidden');
             document.getElementById('result-box').classList.add('hidden');
         }
+
+        function analyze() {
+            const [p1, p2] = state.selected;
+            if(!p1 || !p2) return;
+
+            const box = document.getElementById('result-box');
+            const title = document.getElementById('res-title');
+            const desc = document.getElementById('res-desc');
+            const icon = document.getElementById('res-icon');
+            box.classList.remove('hidden');
+
+            // 1. Check Time Safety
+            if(state.time === 'AM') {
+                if((p1.am === false) || (p2.am === false)) {
+                    setResult(3, "Night Only", "One of these products contains ingredients (like Retinol or Acids) that break down in sunlight or cause sensitivity.", "☀️");
+                    return;
+                }
+            }
+
+            // 2. Check Conflicts
+            const k1 = p1.active + '_' + p2.active;
+            const k2 = p2.active + '_' + p1.active;
+            const issue = logic[k1] || logic[k2];
+
+            if(issue) {
+                setResult(issue.level, issue.title, issue.msg, issue.icon);
+            } else if (p1.active === p2.active && p1.active !== 'hyaluronic') {
+                setResult(2, "Redundant", `You are layering two ${p1.active} products. This might cause irritation or pilling.`, "👯");
+            } else {
+                setResult(1, "Perfect Match", "These ingredients work synergistically. You are good to glow!", "✨");
+            }
+        }
+
+        function setResult(level, t, d, i) {
+            const box = document.getElementById('result-box');
+            const title = document.getElementById('res-title');
+            const desc = document.getElementById('res-desc');
+            const icon = document.getElementById('res-icon');
+
+            icon.innerText = i;
+            title.innerText = t;
+            desc.innerText = d;
+
+            box.className = 'flex flex-col items-center justify-center p-6 rounded-[2rem] border-2 transition-all duration-500 animate-slide-up mt-6 ';
+            
+            if(level === 3) box.className += 'bg-red-50 border-red-100 text-red-800'; // Error
+            else if(level === 2) box.className += 'bg-amber-50 border-amber-100 text-amber-800'; // Warning
+            else box.className += 'bg-emerald-50 border-emerald-100 text-emerald-800'; // Success
+        }
+
+        // --- 4. SHELF LOGIC (With Expiry) ---
+        function addToShelf() {
+            const b = document.getElementById('shelf-brand').value;
+            const n = document.getElementById('shelf-name').value;
+            const a = document.getElementById('shelf-active').value;
+            const p = document.getElementById('shelf-pao').value || 12;
+
+            if(!b || !n) { showToast("Please enter brand and name"); return; }
+
+            const item = {
+                id: Date.now(),
+                brand: b,
+                name: n,
+                active: a,
+                pao: parseInt(p),
+                opened: new Date().toISOString(),
+                am: (a !== 'retinol' && a !== 'acids')
+            };
+
+            state.shelf.push(item);
+            saveShelf();
+            renderShelf();
+            
+            // Clear inputs
+            document.getElementById('shelf-name').value = '';
+            document.getElementById('shelf-brand').value = '';
+            showToast("Added to Shelf");
+        }
+
+        function deleteItem(id) {
+            state.shelf = state.shelf.filter(i => i.id !== id);
+            saveShelf();
+            renderShelf();
+        }
+
+        function saveShelf() {
+            localStorage.setItem('skinShelf_v2', JSON.stringify(state.shelf));
+        }
+
+        function renderShelf() {
+            const list = document.getElementById('shelf-grid');
+            const count = document.getElementById('shelf-count');
+            
+            count.innerText = `${state.shelf.length} items`;
+
+            if(state.shelf.length === 0) {
+                list.innerHTML = `<div class="text-center py-10 opacity-40"><p class="text-4xl mb-2">🧴</p><p class="text-xs">Your shelf is empty.</p></div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            state.shelf.forEach(item => {
+                // Calculate Expiry
+                const openDate = new Date(item.opened);
+                const today = new Date();
+                const diffTime = Math.abs(today - openDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                const daysLeft = (item.pao * 30) - diffDays;
+                
+                let badgeClass = 'bg-emerald-100 text-emerald-600';
+                let statusText = `${daysLeft} days left`;
+
+                if(daysLeft < 0) {
+                    badgeClass = 'bg-red-100 text-red-600';
+                    statusText = 'EXPIRED';
+                } else if (daysLeft < 30) {
+                    badgeClass = 'bg-amber-100 text-amber-600';
+                }
+
+                const el = document.createElement('div');
+                el.className = 'bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center group';
+                el.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-xs">
+                            ${item.active === 'vit_c' ? '🍊' : item.active === 'retinol' ? '✨' : '💧'}
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">${item.brand}</p>
+                            <p class="text-xs font-bold text-slate-700">${item.name}</p>
+                            <div class="mt-1 flex gap-2">
+                                <span class="text-[9px] px-1.5 py-0.5 rounded-md font-bold ${badgeClass}">${statusText}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="deleteItem(${item.id})" class="text-slate-300 hover:text-red-400 p-2 transition opacity-0 group-hover:opacity-100">✕</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        // Run
+        init();
+
     </script>
 </body>
 </html>
+
