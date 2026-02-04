@@ -1,197 +1,221 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkinMatch ✨ Professional Glow</title>
+    <title>SkinMatch ✨ Global Glow Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 fontFamily: { sans: ['Quicksand', 'sans-serif'] },
-                extend: { boxShadow: { 'soft-pink': '0 20px 50px -12px rgba(244, 114, 182, 0.4)' } }
+                extend: { boxShadow: { 'glow-pink': '0 0 30px -5px rgba(244, 114, 182, 0.4)' } }
             }
         }
     </script>
     <style>
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
-        .quiz-option:checked + label { background: #fbcfe8; border-color: #f472b6; color: #9d174d; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-slide { animation: slideIn 0.4s ease-out forwards; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 10px; }
+        .tab-active { border-bottom: 3px solid #f472b6; color: #f472b6; font-weight: bold; }
+        @keyframes pulse-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        .animate-pulse-soft { animation: pulse-soft 3s infinite; }
     </style>
 </head>
-<body class="bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-pink-100 via-purple-50 to-orange-50 min-h-screen p-4 flex flex-col items-center">
+<body class="bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rose-100 via-indigo-50 to-orange-50 min-h-screen font-sans p-4 flex flex-col items-center">
 
-    <div id="quiz-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-pink-200/40 backdrop-blur-md">
-        <div class="bg-white w-full max-w-md rounded-[3rem] shadow-soft-pink p-8 animate-slide">
-            <div id="quiz-content">
-                <div class="text-center mb-6">
-                    <span class="text-3xl">🩺</span>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-2">Analiza Cery</h2>
-                    <p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Krok <span id="quiz-step">1</span> z 4</p>
-                </div>
-                
-                <h3 id="quiz-question" class="text-lg font-semibold text-center text-gray-700 mb-8 h-12">Jak czuje się Twoja skóra rano?</h3>
-                
-                <div id="quiz-options" class="space-y-3">
-                    </div>
+    <div class="w-full max-w-md glass rounded-[3rem] shadow-glow-pink p-8 border border-white relative overflow-hidden">
+        
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-black text-pink-500 tracking-tighter">SkinMatch <span class="text-indigo-300">Pro</span></h1>
+            <div class="flex gap-2">
+                <button onclick="showSection('quiz')" class="p-2 hover:bg-pink-100 rounded-full transition">🧬</button>
+                <button onclick="showSection('shelf')" class="p-2 hover:bg-pink-100 rounded-full transition">🧴</button>
+            </div>
+        </div>
 
-                <div class="mt-8 flex justify-between items-center">
-                    <button id="prev-btn" onclick="prevStep()" class="text-gray-400 text-sm font-bold opacity-0 transition">Powrót</button>
-                    <div id="quiz-dots" class="flex gap-2"></div>
-                </div>
+        <div id="section-matcher" class="space-y-6">
+            <div class="text-center bg-white/50 py-3 rounded-2xl mb-6">
+                <p id="skin-badge" class="text-[10px] font-bold text-pink-400 uppercase tracking-widest">Global Glow Community</p>
             </div>
 
-            <div id="quiz-result" class="hidden text-center">
-                <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">✨</div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2">Twoja Recepta Blasku</h2>
-                <div id="skin-type-tag" class="inline-block bg-pink-500 text-white text-[10px] px-3 py-1 rounded-full font-bold mb-4 uppercase">Cera Mieszana</div>
-                <p class="text-sm text-gray-500 mb-6">Na podstawie Twoich odpowiedzi, Twoja skóra potrzebuje głównie:</p>
-                <div id="recommended-list" class="flex flex-wrap justify-center gap-2 mb-8 text-[10px] font-bold">
-                    </div>
-                <button onclick="closeQuiz()" class="w-full bg-pink-500 text-white py-4 rounded-2xl font-bold shadow-lg hover:scale-[1.02] transition">ZACZNIJ PIELĘGNACJĘ</button>
+            <div class="relative">
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-4 mb-1 block">Step 1: Focus Treatment</label>
+                <input type="text" id="search1" oninput="filterProducts(1)" placeholder="Search Brand or Product..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none border-2 border-transparent focus:border-pink-300 transition-all text-sm">
+                <div id="results1" class="hidden absolute z-30 w-full mt-1 bg-white border rounded-2xl shadow-xl max-h-40 overflow-y-auto custom-scroll"></div>
+                <div id="selected1" class="hidden p-4 bg-pink-50 rounded-3xl text-sm font-bold text-pink-600 flex justify-between items-center animate-pulse-soft"><span></span> <button onclick="clearSelection(1)">✕</button></div>
             </div>
+
+            <div class="flex justify-center text-pink-200">✦</div>
+
+            <div class="relative">
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-4 mb-1 block">Step 2: Layer or Seal</label>
+                <input type="text" id="search2" oninput="filterProducts(2)" placeholder="Search Brand or Product..." class="w-full p-4 bg-white rounded-3xl shadow-sm outline-none border-2 border-transparent focus:border-indigo-300 transition-all text-sm">
+                <div id="results2" class="hidden absolute z-30 w-full mt-1 bg-white border rounded-2xl shadow-xl max-h-40 overflow-y-auto custom-scroll"></div>
+                <div id="selected2" class="hidden p-4 bg-indigo-50 rounded-3xl text-sm font-bold text-indigo-600 flex justify-between items-center animate-pulse-soft"><span></span> <button onclick="clearSelection(2)">✕</button></div>
+            </div>
+
+            <div class="flex bg-gray-100 rounded-2xl p-1">
+                <button onclick="setTime('AM')" id="btn-AM" class="flex-1 py-2 text-[10px] font-bold rounded-xl transition bg-white text-pink-500 shadow-sm">☀️ MORNING</button>
+                <button onclick="setTime('PM')" id="btn-PM" class="flex-1 py-2 text-[10px] font-bold rounded-xl transition text-gray-400">🌙 EVENING</button>
+            </div>
+
+            <div id="result-box" class="hidden p-6 rounded-[2.5rem] text-center border-2 animate-slide-up">
+                <div id="result-icon" class="text-5xl mb-3"></div>
+                <div id="result-title" class="font-bold text-lg mb-1"></div>
+                <p id="result-text" class="text-[11px] leading-relaxed mb-4"></p>
+                <div id="ingredient-tip" class="text-[9px] bg-white/50 p-3 rounded-xl italic text-gray-500"></div>
+            </div>
+        </div>
+
+        <div id="section-shelf" class="hidden space-y-4">
+            <h3 class="text-center font-bold text-pink-500">My Secret Shelf 🤫</h3>
+            <div class="bg-pink-50 p-5 rounded-3xl border-2 border-dashed border-pink-200">
+                <input type="text" id="new-brand" placeholder="Brand..." class="w-full p-3 mb-2 rounded-xl text-xs outline-pink-200 border-none">
+                <input type="text" id="new-name" placeholder="Product Name..." class="w-full p-3 mb-2 rounded-xl text-xs outline-pink-200 border-none">
+                <div class="flex gap-2 mb-4">
+                    <select id="new-active" class="flex-1 p-3 rounded-xl text-[10px] font-bold outline-pink-200 border-none">
+                        <option value="retinol">Active: Retinol</option>
+                        <option value="vit_c">Active: Vitamin C</option>
+                        <option value="acids">Active: Acids (Exfoliant)</option>
+                        <option value="niacinamide">Active: Niacinamide</option>
+                        <option value="peptides">Active: Peptides</option>
+                        <option value="hyaluronic">Active: Hydrator/Base</option>
+                    </select>
+                    <input type="number" id="new-pao" placeholder="PAO (Months)" class="w-20 p-3 rounded-xl text-xs outline-pink-200 border-none">
+                </div>
+                <button onclick="saveToShelf()" class="w-full bg-pink-400 text-white py-3 rounded-2xl font-bold text-[10px] uppercase shadow-md">Add to Collection</button>
+            </div>
+            <div id="shelf-list" class="space-y-2 max-h-48 overflow-y-auto custom-scroll">
+                </div>
         </div>
     </div>
 
-    <main id="app-content" class="w-full max-w-md glass rounded-[2.5rem] shadow-soft-pink p-8 border-2 border-pink-100 blur-sm">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-2xl font-bold text-pink-500">SkinMatch</h1>
-                <p id="user-skin-info" class="text-[10px] font-bold text-pink-300 uppercase tracking-tighter cursor-pointer" onclick="openQuiz()">Zmień profil cery ⚙️</p>
-            </div>
-            <button onclick="toggleAddForm()" class="bg-pink-400 text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-md">+ DODAJ PRODUKT</button>
-        </div>
-
-        <div class="space-y-4">
-            <div class="relative">
-                <input type="text" id="search1" oninput="filterProducts(1)" placeholder="Szukaj produktu nr 1..." class="w-full p-4 bg-white rounded-2xl border-2 border-pink-50 focus:border-pink-300 outline-none text-sm">
-                <div id="results1" class="hidden absolute z-30 w-full mt-1 bg-white border rounded-2xl shadow-xl max-h-40 overflow-y-auto"></div>
-                <div id="selected1" class="hidden p-4 bg-pink-100 rounded-2xl text-xs font-bold text-pink-600 flex justify-between items-center"><span></span> <button onclick="clearSelection(1)">✕</button></div>
-            </div>
-            <div class="text-center font-bold text-pink-200">X</div>
-            <div class="relative">
-                <input type="text" id="search2" oninput="filterProducts(2)" placeholder="Szukaj produktu nr 2..." class="w-full p-4 bg-white rounded-2xl border-2 border-pink-50 focus:border-pink-300 outline-none text-sm">
-                <div id="results2" class="hidden absolute z-30 w-full mt-1 bg-white border rounded-2xl shadow-xl max-h-40 overflow-y-auto"></div>
-                <div id="selected2" class="hidden p-4 bg-purple-100 rounded-2xl text-xs font-bold text-purple-600 flex justify-between items-center"><span></span> <button onclick="clearSelection(2)">✕</button></div>
-            </div>
-        </div>
-
-        <div id="result-box" class="hidden mt-8 p-6 rounded-[2rem] text-center border-2 transition-all">
-            <div id="result-icon" class="text-5xl mb-3"></div>
-            <div id="result-title" class="font-bold text-lg mb-1"></div>
-            <div id="result-text" class="text-[11px] opacity-90"></div>
-        </div>
-    </main>
-
     <script>
-        // --- LOGIKA QUIZU ---
-        const questions = [
-            { q: "Jak czuje się Twoja skóra rano?", opts: [
-                { t: "Napięta i sucha", tags: ["dry", "hydration"] },
-                { t: "Błyszcząca w strefie T", tags: ["combination", "sebum"] },
-                { t: "Cała się świeci", tags: ["oily", "acne"] },
-                { t: "Często piecze/czerwieni się", tags: ["sensitive", "soothing"] }
-            ]},
-            { q: "Twój największy cel pielęgnacyjny?", opts: [
-                { t: "Zmarszczki i jędrność", tags: ["anti-aging", "peptides"] },
-                { t: "Wypryski i zaskórniki", tags: ["acne", "acids"] },
-                { t: "Przebarwienia i brak blasku", tags: ["glow", "vit_c"] },
-                { t: "Ukojenie i regeneracja", tags: ["soothing", "ceramides"] }
-            ]},
-            { q: "Jak reagujesz na nowe kosmetyki?", opts: [
-                { t: "Zazwyczaj bez problemu", tags: ["normal"] },
-                { t: "Czasem mnie zapychają", tags: ["oily"] },
-                { t: "Często mam zaczerwienienia", tags: ["sensitive"] }
-            ]},
-            { q: "Ile masz lat? (Wpływa na tempo odnowy)", opts: [
-                { t: "Poniżej 25", tags: ["prevention"] },
-                { t: "25 - 35", tags: ["retinization"] },
-                { t: "Powyżej 35", tags: ["aging"] }
-            ]}
+        // --- GLOBAL SETTINGS & DATA ---
+        let currentDayTime = 'AM';
+        const productDB = [
+            { brand: "The Ordinary", name: "Retinol 1% in Squalane", active: "retinol", am_safe: false },
+            { brand: "The Ordinary", name: "Ascorbyl Glucoside Sol. 12%", active: "vit_c", am_safe: true },
+            { brand: "CeraVe", name: "Hydrating Facial Cleanser", active: "hyaluronic", am_safe: true },
+            { brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", active: "acids", am_safe: false },
+            { brand: "Skinceuticals", name: "C E Ferulic", active: "vit_c", am_safe: true },
+            { brand: "La Roche-Posay", name: "Effaclar Serum", active: "acids", am_safe: false }
         ];
 
-        let currentStep = 0;
-        let userTags = [];
+        const glossary = {
+            retinol: "Anti-aging powerhouse. Stimulates collagen but makes skin sun-sensitive.",
+            vit_c: "Antioxidant that brightens skin and protects against pollution.",
+            acids: "Exfoliates dead cells. Great for glow, but don't overdo it!",
+            niacinamide: "Oil control and pore minimizer. Generally very safe.",
+            peptides: "The 'building blocks' of skin. Great for firmness.",
+            hyaluronic: "Magnet for moisture. Holds 1000x its weight in water."
+        };
 
-        function initQuiz() {
-            const step = questions[currentStep];
-            document.getElementById('quiz-step').innerText = currentStep + 1;
-            document.getElementById('quiz-question').innerText = step.q;
-            const optsDiv = document.getElementById('quiz-options');
-            optsDiv.innerHTML = '';
-            
-            step.opts.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full p-4 text-sm font-semibold text-gray-600 bg-gray-50 rounded-2xl border-2 border-transparent hover:border-pink-300 transition text-left";
-                btn.innerText = opt.t;
-                btn.onclick = () => nextStep(opt.tags);
-                optsDiv.appendChild(btn);
-            });
+        const conflicts = {
+            'retinol_acids': { type: 'error', icon: '🩹', title: 'Skin Barrier Alert!', msg: 'Both ingredients are heavy exfoliants. Using them together might cause peeling or burns.' },
+            'retinol_vit_c': { type: 'warning', icon: '🌙', title: 'Schedule Tweak', msg: 'Best split: Vitamin C for AM protection, Retinol for PM repair.' },
+            'peptides_vit_c': { type: 'warning', icon: '🧪', title: 'Science Conflict', msg: 'Pure Vit C can destabilize Copper Peptides. Use them at different times.' }
+        };
 
-            document.getElementById('prev-btn').style.opacity = currentStep > 0 ? "1" : "0";
+        let userShelf = JSON.parse(localStorage.getItem('globalShelf')) || [];
+        let selected = [null, null];
+
+        // --- CORE FUNCTIONS ---
+        function setTime(time) {
+            currentDayTime = time;
+            document.getElementById('btn-AM').className = time === 'AM' ? 'flex-1 py-2 text-[10px] font-bold rounded-xl bg-white text-pink-500 shadow-sm' : 'flex-1 py-2 text-[10px] font-bold rounded-xl text-gray-400';
+            document.getElementById('btn-PM').className = time === 'PM' ? 'flex-1 py-2 text-[10px] font-bold rounded-xl bg-white text-indigo-500 shadow-sm' : 'flex-1 py-2 text-[10px] font-bold rounded-xl text-gray-400';
+            checkCompatibility();
         }
 
-        function nextStep(tags) {
-            userTags.push(...tags);
-            if (currentStep < questions.length - 1) {
-                currentStep++;
-                initQuiz();
+        function filterProducts(num) {
+            const val = document.getElementById('search' + num).value.toLowerCase();
+            const resDiv = document.getElementById('results' + num);
+            if (val.length < 2) { resDiv.classList.add('hidden'); return; }
+
+            const fullDB = [...productDB, ...userShelf];
+            const filtered = fullDB.filter(p => p.brand.toLowerCase().includes(val) || p.name.toLowerCase().includes(val));
+
+            resDiv.innerHTML = '';
+            filtered.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'p-4 hover:bg-pink-50 cursor-pointer text-[11px] border-b border-gray-50 flex justify-between items-center';
+                item.innerHTML = `<div><b class="text-pink-400 uppercase text-[9px]">${p.brand}</b><br>${p.name}</div>`;
+                item.onclick = () => selectProduct(num, p);
+                resDiv.appendChild(item);
+            });
+            resDiv.classList.remove('hidden');
+        }
+
+        function selectProduct(num, product) {
+            selected[num-1] = product;
+            document.getElementById('search' + num).classList.add('hidden');
+            document.getElementById('results' + num).classList.add('hidden');
+            const selDiv = document.getElementById('selected' + num);
+            selDiv.querySelector('span').innerText = product.brand + " - " + product.name;
+            selDiv.classList.remove('hidden');
+            checkCompatibility();
+        }
+
+        function checkCompatibility() {
+            if (!selected[0] || !selected[1]) return;
+            const resBox = document.getElementById('result-box');
+            resBox.classList.remove('hidden');
+
+            const a = selected[0], b = selected[1];
+            const combo = a.active + '_' + b.active;
+            const comboRev = b.active + '_' + a.active;
+            const conflict = conflicts[combo] || conflicts[comboRev];
+
+            // AM/PM Logic Check
+            const amDanger = currentDayTime === 'AM' && (!a.am_safe || !b.am_safe);
+
+            if (amDanger) {
+                updateUI('☀️', 'PM Preferred', 'One of your products contains Retinol or Acids. These are best for evening use to avoid sun damage.', 'bg-orange-50 border-orange-200 text-orange-800');
+            } else if (conflict) {
+                updateUI(conflict.icon, conflict.title, conflict.msg, conflict.type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800');
             } else {
-                showQuizResult();
+                updateUI('✨', 'Safe Routine!', 'These ingredients play well together. Don\'t forget your SPF during the day!', 'bg-emerald-50 border-emerald-200 text-emerald-800');
             }
+
+            document.getElementById('ingredient-tip').innerText = `Pro Tip: ${glossary[a.active]}`;
         }
 
-        function showQuizResult() {
-            document.getElementById('quiz-content').classList.add('hidden');
-            document.getElementById('quiz-result').classList.remove('hidden');
-            
-            const results = {
-                'retinol': userTags.filter(t => t === 'aging' || t === 'anti-aging').length,
-                'vit_c': userTags.filter(t => t === 'glow').length,
-                'acids': userTags.filter(t => t === 'acne' || t === 'sebum').length,
-                'ceramides': userTags.filter(t => t === 'dry' || t === 'sensitive').length,
-                'peptides': userTags.filter(t => t === 'anti-aging').length
-            };
-
-            const sorted = Object.entries(results).sort((a,b) => b[1] - a[1]);
-            const list = document.getElementById('recommended-list');
-            list.innerHTML = '';
-            
-            sorted.slice(0,3).forEach(([key, val]) => {
-                const tag = document.createElement('span');
-                tag.className = "bg-pink-100 text-pink-600 px-4 py-2 rounded-full";
-                tag.innerText = key.toUpperCase().replace('_', ' ');
-                list.appendChild(tag);
-            });
-
-            const type = userTags.includes('dry') ? 'Cera Sucha' : (userTags.includes('oily') ? 'Cera Tłusta' : 'Cera Mieszana');
-            document.getElementById('skin-type-tag').innerText = type;
-            localStorage.setItem('userSkinType', type);
+        function updateUI(icon, title, text, style) {
+            const box = document.getElementById('result-box');
+            box.className = `p-6 rounded-[2.5rem] text-center border-2 mt-8 animate-slide-up ${style}`;
+            document.getElementById('result-icon').innerText = icon;
+            document.getElementById('result-title').innerText = title;
+            document.getElementById('result-text').innerText = text;
         }
 
-        function closeQuiz() {
-            document.getElementById('quiz-modal').classList.add('hidden');
-            document.getElementById('app-content').classList.remove('blur-sm');
-            document.getElementById('user-skin-info').innerText = "Profil: " + localStorage.getItem('userSkinType') + " ⚙️";
+        function saveToShelf() {
+            const b = document.getElementById('new-brand').value;
+            const n = document.getElementById('new-name').value;
+            const a = document.getElementById('new-active').value;
+            const p = document.getElementById('new-pao').value;
+            if(!b || !n) return;
+
+            const newItem = { brand: b, name: n, active: a, pao: p, opened: new Date().toISOString(), am_safe: a !== 'retinol' && a !== 'acids' };
+            userShelf.push(newItem);
+            localStorage.setItem('globalShelf', JSON.stringify(userShelf));
+            showSection('matcher');
+            alert('Saved to your collection! 🌸');
         }
 
-        function openQuiz() {
-            currentStep = 0;
-            userTags = [];
-            document.getElementById('quiz-content').classList.remove('hidden');
-            document.getElementById('quiz-result').classList.add('hidden');
-            document.getElementById('quiz-modal').classList.remove('hidden');
-            initQuiz();
+        function showSection(name) {
+            document.getElementById('section-matcher').className = name === 'matcher' ? 'space-y-6' : 'hidden';
+            document.getElementById('section-shelf').className = name === 'shelf' ? 'space-y-4' : 'hidden';
         }
 
-        // --- INICJALIZACJA ---
-        initQuiz();
-        
-        // [TUTAJ WKLEJ POPRZEDNIĄ LOGIKĘ WYSZUKIWANIA I KONFLIKTÓW Z POPRZEDNIEJ ODPOWIEDZI]
-        // Dla zaoszczędzenia miejsca nie dubluję funkcji filterProducts, selectProduct i checkMatch, 
-        // które działają tak samo jak w wersji "Glow & Print Edition".
+        function clearSelection(n) {
+            selected[n-1] = null;
+            document.getElementById('search' + n).classList.remove('hidden');
+            document.getElementById('selected' + n).classList.add('hidden');
+            document.getElementById('result-box').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
